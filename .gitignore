@@ -6,6 +6,3 @@
 
 # ==== Quarto intermediate / cache files ====
 .quarto/
-
-# ==== Rendered site output ====
-docs/
