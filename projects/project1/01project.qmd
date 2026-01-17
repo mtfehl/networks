@@ -1,5 +1,6 @@
 ---
-title: "01project"
+title: "Project: Name"
+desc: "description of the project"
 format: html
 ---
 
