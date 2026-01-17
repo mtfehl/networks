@@ -31,7 +31,7 @@ website:
             href: https://mtfehl.github.io/geospatial/
           - text: "Time Series Econometrics"
             href: https://mtfehl.github.io/finc_metrics/
-          - text: "Networks: Algorithms"
+          - text: "Networks: Concepts & Algorithms"
             href: index.qmd
       - text: "About Me"
         href: https://mtfehl.github.io/econ_portfolio/about.html
