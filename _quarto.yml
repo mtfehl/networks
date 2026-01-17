@@ -29,7 +29,7 @@ website:
         menu:
           - text: "Geospatial"
             href: https://mtfehl.github.io/geospatial/
-          - text: "Time Series Econometrics"
+          - text: "Econometrics: Time Series"
             href: https://mtfehl.github.io/finc_metrics/
           - text: "Networks: Concepts & Algorithms"
             href: index.qmd
