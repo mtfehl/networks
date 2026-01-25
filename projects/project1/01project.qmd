@@ -1,5 +1,10 @@
 ---
-title: "Project: Name"
-desc: "description of the project"
-format: html
+title: "Project 1: Name"
+author: "Michael Fehl"
+desc: "Project 2 Description"
+format:
+  html:
+    embed-resources: true
+project: true
+image: /images/placeholder.png
 ---

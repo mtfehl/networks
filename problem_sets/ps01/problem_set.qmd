@@ -1,5 +1,11 @@
 ---
 title: "Problem Set 1"
-format: html
+author: "Michael Fehl"
+desc: "Problem Set 1 Description"
+format:
+  html:
+    embed-resources: true
+problem-set: true
+image: /images/placeholder.png
 ---
 

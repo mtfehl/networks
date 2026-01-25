@@ -1,5 +1,11 @@
 ---
-title: "ps02"
-format: html
+title: "Problem Set 2:"
+author: "Michael Fehl"
+desc: "Problem Set 2: Description"
+format:
+  html:
+    embed-resources: true
+problem-set: true
+image: /images/placeholder.png
 ---
 

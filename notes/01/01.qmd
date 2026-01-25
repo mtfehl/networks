@@ -1,5 +1,11 @@
 ---
-title: "Class Notes"
-format: html
+title: "Class 1 Notes"
+author: "Michael Fehl"
+desc: "Class 1 Notes Description"
+format: 
+  html:
+    embed-resources: true
+class-notes: true
+image: /images/placeholder.png
 ---
 
