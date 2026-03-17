@@ -12,3 +12,8 @@
 
 # === Data ===
 
+*.png
+*.jpg
+!images/
+!docs/images/
+!_freeze/

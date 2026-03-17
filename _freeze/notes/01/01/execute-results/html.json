@@ -1,0 +1,15 @@
+{
+  "hash": "28af63171380f1d84a45a730d53e0526",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Class 1 Notes\"\nauthor: \"Michael Fehl\"\ndesc: \"Class 1 Notes Description\"\nformat: \n  html:\n    embed-resources: true\nclass-notes: true\nimage: /images/placeholder.png\n---\n\n# Intro\n\n# igraph\n\n\n::: {.cell}\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
