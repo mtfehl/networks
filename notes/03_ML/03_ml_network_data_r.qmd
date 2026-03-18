@@ -1,7 +1,7 @@
 ---
-title: "03 — Machine Learning with Network Data"
+title: "Machine Learning with Network Data"
 subtitle: "Networks I: Concepts and Algorithms | BSE Data Science"
-author: "Notes based on Milán (2026), Newman (2013), Hamilton (2020)"
+author: "Michael Fehl"
 date: today
 format:
   html:
@@ -93,7 +93,7 @@ Real network data is almost always **incomplete** in multiple ways:
 - **Missing node attributes**: survey non-response, privacy restrictions
 - **Missing nodes entirely**: only a slice of the population is observed
 
-This incompleteness is not random — it is systematically correlated with the
+This incompleteness is not random: it is systematically correlated with the
 network structure itself. Methods that assume missing-at-random can be badly
 misleading.
 
@@ -105,8 +105,7 @@ misleading.
 
 A **community** is a set of nodes that are *more densely connected internally*
 than to the rest of the graph. This is an intuitive but deliberately vague
-definition — and the lack of a universal definition is both the field's
-richness and its difficulty.
+definition.
 
 Why do we care?
 
@@ -140,7 +139,7 @@ $Q$ close to 1 (all edges internal), a random partition has $Q \approx 0$.
 ## Why the configuration model as null?
 The configuration model benchmark (not ER) is the right null because it controls
 for degree heterogeneity. In ER, high-degree nodes automatically "look like"
-hub communities — using ER as null would find spurious communities wherever
+hub communities; using ER as null would find spurious communities wherever
 there are hubs. Conditioning on degree removes this confound.
 :::
 
@@ -265,7 +264,7 @@ legend("topleft",
 
 ## SBM Inference as an Alternative
 
-Modularity optimisation lacks a generative model — we are maximising a score,
+Modularity optimisation lacks a generative model; we are maximising a score,
 not fitting a probability model. The **SBM inference** approach (from Lecture 2)
 is more principled:
 
@@ -290,7 +289,7 @@ exist. Run multiple random initialisations and select the best.
 Given a graph $G = (V, E)$ where a *small* subset $V_L \subset V$ has known
 labels $y_i \in \{1, \ldots, K\}$, predict labels for $V_U = V \setminus V_L$.
 
-The key assumption: **homophily** — connected nodes tend to share labels.
+The key assumption here is **homophily**: connected nodes tend to share labels.
 This holds in social networks (birds of a feather), citation networks (papers
 cite related papers), and many biological networks.
 
@@ -298,7 +297,7 @@ cite related papers), and many biological networks.
 ## When homophily fails
 Fraud detection networks often exhibit **heterophily**: fraudsters connect to
 legitimate users in order to appear trustworthy. In such networks, label
-propagation gives the wrong answer — a node surrounded by legitimate users
+propagation gives the wrong answer; a node surrounded by legitimate users
 is *more* suspicious, not less. Always validate the homophily assumption.
 :::
 
@@ -449,7 +448,7 @@ clean node features.
 ## Problem Setup
 
 Given the observed graph $G = (V, E)$, predict which non-edges $(i, j) \notin E$
-are "true" edges — either missing from our measurement, or likely to form in
+are "true" edges; either missing from our measurement, or likely to form in
 the future.
 
 **Evaluation protocol**:
@@ -628,7 +627,7 @@ Then:
 - **Community detection**: $k$-means on $\{z_i\}$
 - **Visualisation**: 2D PCA or UMAP of $\{z_i\}$
 
-The key design choice is what "similar" means — different definitions lead
+The key design choice is what "similar" means; different definitions lead
 to different algorithms.
 
 ## Shallow Embeddings: The Matrix Factorization View
@@ -644,7 +643,7 @@ This is equivalent to truncated SVD on $A_{\text{sym}} = D^{-1/2} A D^{-1/2}$.
 The top-$d$ singular vectors of the normalised adjacency give embeddings
 where dot products approximate random-walk co-occurrence probabilities.
 
-**Limitation**: these are *transductive* — the embedding is fixed for the
+**Limitation**: these are *transductive*; the embedding is fixed for the
 training graph. A new node that joins the network needs to be re-embedded.
 
 ## DeepWalk: Random Walks as Sentences
@@ -665,8 +664,8 @@ where $\mathcal{N}_R(v)$ is the multi-set of nodes in the walk neighbourhood
 of $v$ (within window $w$), and $P_n$ is the noise distribution for negative
 sampling.
 
-**Why it works**: nodes that frequently co-occur on short random walks —
-meaning they are in the same community or tightly connected subgraph —
+**Why it works**: nodes that frequently co-occur on short random walks;
+meaning they are in the same community or tightly connected subgraph;
 get assigned similar embedding vectors. The skip-gram objective
 *factorises* the PMI (pointwise mutual information) matrix of co-occurrences.
 
@@ -808,7 +807,7 @@ learned on a specific graph. They cannot:
 - Adapt to different downstream tasks (same embedding used for both
   link prediction and community detection)
 
-This motivates **inductive** methods — specifically Graph Neural Networks.
+This motivates **inductive** methods; specifically Graph Neural Networks.
 
 ---
 
@@ -859,7 +858,7 @@ $\mathcal{L} = -\sum_{i \in V_L} \sum_k y_{ik} \ln Z_{ik}$
 ## GraphSAGE: Scalable Inductive Learning
 
 GCN requires the full adjacency matrix $\hat{A}$ during training. For
-a graph with $10^6$ nodes, $\hat{A}$ is a $10^6 \times 10^6$ matrix —
+a graph with $10^6$ nodes, $\hat{A}$ is a $10^6 \times 10^6$ matrix;
 impossible to store or multiply with.
 
 **GraphSAGE** (Hamilton, Ying & Leskovec 2017) introduces *neighbourhood
@@ -872,7 +871,7 @@ $$h_v^{(l+1)} = \sigma\!\left(W^{(l)} \left[ h_v^{(l)} \,\|\, \text{AGG}\!\left(
 sampled neighbourhood of size $S$).
 
 Because the weight matrices are *shared*, a trained GraphSAGE model
-can embed nodes that were not present during training — this is the
+can embed nodes that were not present during training; this is the
 inductive property.
 
 ## Graph Attention Networks (GAT, Veličković et al. 2018)
