@@ -3,8 +3,9 @@ title: "Networks: Concepts & Algorithms"
 listing:
   - id: class-notes
     contents: 
-      - notes/01
-      - notes/02
+      - notes/01_INTRO
+      - notes/02_RGM
+      - notes/03_ML
     include:
       class-notes: true
     type: grid

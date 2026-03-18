@@ -17,3 +17,9 @@
 !images/
 !docs/images/
 !_freeze/
+
+# === Misc ===
+.Renviron
+texput.log
+*_cache/
+*_files/

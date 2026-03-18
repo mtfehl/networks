@@ -7,3 +7,5 @@ website:
 
 metadata-files:
   - ../../../_website.yml
+  
+jupyter: networks

@@ -2,9 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
-      "/notes/01/01.html",
-      "/notes/02/02.html",
       "/problem_sets/ps01/problem_set.html",
+      "/problem_sets/ps01/problem_set_q4.html",
       "/projects/project1/01project.html"
     ]
   }

@@ -1,0 +1,907 @@
+---
+title: "01: Introduction to Networks"
+subtitle: "Networks I: Concepts and Algorithms"
+author: "Michael Fehl"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: false
+    embed-resources: false
+  pdf:
+    toc: true
+    number-sections: true
+execute:
+  warning: false
+  message: false
+  freeze: auto
+  cache: true
+---
+
+```{r}
+#| label: setup
+#| echo: false
+library(igraph)
+library(Matrix)
+library(R.matlab)   # for readMat()
+library(ggplot2)
+library(dplyr)
+
+theme_set(
+  theme_classic(base_size = 11) +
+    theme(
+      plot.title   = element_text(face = "bold"),
+      axis.line.y  = element_blank(),
+      axis.ticks.y = element_blank()
+    )
+)
+```
+
+# Why Networks?
+
+Before diving into definitions, it is worth asking: *why is the study of networks a
+distinct field at all?* Most economic models treat agents as interacting through
+aggregate prices — a firm responds to market wages, not to the specific workers it
+employs. Most statistical models treat observations as i.i.d. draws. Neither
+framework is adequate when the *identity* of who you are connected to fundamentally
+changes outcomes.
+
+Consider a few canonical examples:
+
+| Setting | Nodes | Edges | Key question |
+|---------|-------|-------|-------------|
+| Labour market | Workers, firms | Employment relations | Why do referred workers earn more? |
+| Epidemiology | People | Physical contact | Who to vaccinate first? |
+| Finance | Banks | Interbank loans | Which bank's failure is systemic? |
+| Supply chain | Firms | Input–output flows | Where does a shock propagate? |
+| Social media | Users | Follows/retweets | How does misinformation spread? |
+
+What all of these have in common: the *structure* of connections — not just their
+average density — determines outcomes. A disease spreading through a hub-and-spoke
+airline network behaves very differently from one spreading through a lattice. A
+worker connected to a structurally diverse set of acquaintances finds jobs faster
+than one embedded in a tightly clustered clique, even holding the *number* of
+connections fixed.
+
+::: {.callout-note}
+## Course perspective
+This is not primarily a machine learning course. We study networks from an
+economics angle: we want to model strategic behaviour, predict equilibria, and
+use the structure of networks to understand data on economic and social activity.
+Machine learning tools (GNNs, embeddings) appear later as *instruments* for
+prediction, not as the main object of study.
+:::
+
+# Graph Theory: The Mathematical Language of Networks
+
+## From Bridges to Graphs
+
+The history of graph theory begins with a practical puzzle. In 1736, the city of
+Königsberg (now Kaliningrad) was divided by the Pregel River into four landmasses
+connected by seven bridges. Citizens wondered: is there a walk that crosses each
+bridge *exactly once*?
+
+Leonhard Euler proved the answer is no, and in doing so laid the foundation for
+graph theory. His key insight: **the problem is purely topological**. The specific
+geography is irrelevant; what matters is only which landmasses are connected, and
+how many times. He observed that such a walk (now called an *Eulerian path*)
+requires every node except the start and end to have an even number of edges.
+Königsberg has four nodes, all with odd degree — so no such walk exists.
+
+The abstraction Euler introduced — a set of *nodes* connected by *edges* — is
+exactly the graph. Every network model in this course is a specialisation of this
+same idea.
+
+## Formal Definitions
+
+A **graph** $G = (V, E)$ consists of:
+
+- $V$: a set of **vertices** (nodes), $|V| = n$
+- $E$: a set of **edges** (links), $|E| = m$
+
+For an **undirected, unweighted** graph, edges are unordered pairs
+$\{i, j\} \in E$, and the adjacency matrix is:
+
+$$A_{ij} = \begin{cases} 1 & \text{if } \{i,j\} \in E \\ 0 & \text{otherwise} \end{cases}$$
+
+Three key properties of this matrix:
+
+1. **Binary**: $A_{ij} \in \{0, 1\}$
+2. **Symmetric**: $A_{ij} = A_{ji}$ (since edges have no direction)
+3. **Zero diagonal**: $A_{ii} = 0$ (no self-loops)
+
+### Variants Worth Knowing
+
+**Directed graphs**: edges are ordered pairs $(i, j) \in E$, so $A$ is no longer
+symmetric. Useful for citations, Twitter follows, river flows.
+
+**Weighted graphs**: $A_{ij} = w_{ij} \in \mathbb{R}$ records edge strength (trade
+volume, message frequency, road capacity).
+
+**Bipartite graphs**: $V$ is partitioned into two disjoint sets $V_1, V_2$ with
+edges only between sets (actors ↔ films, buyers ↔ sellers, genes ↔ diseases).
+
+**Multigraphs**: multiple edges between the same pair of nodes are allowed.
+We will mostly stay away from these, but they appear naturally in citation data.
+
+```{r}
+#| label: graph-construction
+#| code-fold: true
+#| fig-cap: "Three graph variants on 6 nodes"
+
+par(mfrow = c(1, 3), mar = c(1, 1, 3, 1))
+
+## ---- Undirected ----
+g_un <- graph(
+  edges = c(0,1, 1,2, 2,3, 3,4, 4,5, 0,5, 1,4) + 1L,  # 1-indexed
+  n = 6, directed = FALSE
+)
+V(g_un)$label <- as.character(0:5)
+plot(
+  g_un,
+  layout        = layout_in_circle(g_un),
+  vertex.size   = 20,
+  vertex.color  = "#4C72B0",
+  vertex.label  = V(g_un)$label,
+  vertex.label.color = "white",
+  vertex.label.cex   = 0.9,
+  edge.color    = "#666666",
+  main          = "Undirected, Unweighted"
+)
+
+## ---- Directed ----
+g_di <- graph(
+  edges = c(0,1, 1,2, 2,3, 3,4, 4,5, 5,0, 1,4) + 1L,
+  n = 6, directed = TRUE
+)
+V(g_di)$label <- as.character(0:5)
+plot(
+  g_di,
+  layout        = layout_in_circle(g_di),
+  vertex.size   = 20,
+  vertex.color  = "#DD8452",
+  vertex.label  = V(g_di)$label,
+  vertex.label.color = "white",
+  vertex.label.cex   = 0.9,
+  edge.color    = "#666666",
+  edge.arrow.size    = 0.5,
+  main          = "Directed"
+)
+
+## ---- Bipartite ----
+g_bi <- make_full_bipartite_graph(3, 3)
+V(g_bi)$label <- c("A", "B", "C", "1", "2", "3")
+V(g_bi)$color <- c(rep("#55A868", 3), rep("#C44E52", 3))
+# Simple bipartite layout
+lay_bi <- layout_as_bipartite(g_bi)
+plot(
+  g_bi,
+  layout        = lay_bi,
+  vertex.size   = 20,
+  vertex.color  = V(g_bi)$color,
+  vertex.label  = V(g_bi)$label,
+  vertex.label.color = "white",
+  vertex.label.cex   = 0.9,
+  edge.color    = "#666666",
+  main          = "Bipartite"
+)
+```
+
+# Degree: The Simplest Node Summary
+
+## Definition and Basic Identities
+
+Describing a network by its full adjacency matrix $A$ is informative but unwieldy.
+The first summary statistic is the **degree** of a node: the number of edges it has.
+
+$$k_i = \sum_{j=1}^{n} A_{ij}$$
+
+For weighted networks this generalises to **strength**: $s_i = \sum_j A_{ij} w_{ij}$.
+
+Two fundamental identities follow immediately from the definition:
+
+**Handshaking lemma**: every edge contributes one to each endpoint's degree, so
+the sum of degrees counts each edge twice:
+
+$$\sum_{i=1}^{n} k_i = 2m \implies \langle k \rangle = \frac{2m}{n}$$
+
+**Density**: the fraction of possible edges that actually exist:
+
+$$\rho = \frac{m}{\binom{n}{2}} = \frac{2m}{n(n-1)} = \frac{\langle k \rangle}{n-1}$$
+
+Real networks are almost always *sparse*: $\rho \to 0$ as $n \to \infty$, meaning
+$m = O(n)$ rather than $m = O(n^2)$. This has enormous computational implications
+— it is what makes sparse matrix formats and igraph's C-level operations practical.
+
+## Directed Degree
+
+In a directed graph, a node has three degree notions:
+
+$$k_i^{\text{out}} = \sum_j A_{ij}, \quad k_i^{\text{in}} = \sum_j A_{ji}, \quad k_i^{\text{tot}} = |\{j : A_{ij} = 1 \text{ or } A_{ji} = 1\}|$$
+
+The conservation law: $\sum_i k_i^{\text{out}} = \sum_i k_i^{\text{in}} = m$, so
+average in-degree always equals average out-degree.
+
+In citation networks (PS1 Q4): $k_i^{\text{out}}$ = number of papers cited by $i$
+(bibliography size); $k_i^{\text{in}}$ = number of papers that cite $i$
+(citations received, often called "in-degree" or "citation count").
+
+## The Degree Distribution
+
+A single number like $\langle k \rangle$ conceals crucial heterogeneity. The
+**degree distribution** $p(k) = \Pr(K = k)$ gives the full picture.
+
+Why does this matter? Consider two networks, both with $n = 1490$ nodes and
+$\langle k \rangle = 25.6$ (the 2004 political blogs network studied by Adamic &
+Glance). The maximum degree in that network was $k_{\max} = 351$ — more than
+13 times the mean. Linear-scale histograms make this invisible. The right tool
+is a **log–log plot** of the complementary CDF:
+
+$$\bar{F}(k) = \Pr(K \geq k)$$
+
+If this is linear on a log–log scale, the degree distribution follows a
+**power law**: $p(k) \propto k^{-\gamma}$. We will study why this emerges
+and what it implies in Lecture 2 (Section 4: Preferential Attachment).
+
+```{r}
+#| label: facebook-degree
+#| code-fold: true
+#| fig-cap: "Degree distribution of the American75 Facebook network (log–log scale)."
+
+## Load American75 .mat file
+mat  <- readMat("data/facebook_small/American75.mat")
+A_sp <- mat$A                        # sparse matrix (dgCMatrix or similar)
+
+# Build igraph from sparse adjacency
+A_trip <- as(A_sp, "TsparseMatrix")  # converts to triplet form (i, j, x)
+edges_fb <- cbind(A_trip@i + 1L, A_trip@j + 1L)   # 1-indexed
+g <- graph_from_edgelist(edges_fb, directed = FALSE)
+g <- simplify(g)                     # remove duplicates / self-loops
+
+degs   <- degree(g)
+n_g    <- vcount(g)
+mean_k <- mean(degs)
+
+## CCDF
+ccdf_k   <- sort(unique(degs))
+ccdf_val <- sapply(ccdf_k, function(k) mean(degs >= k))
+
+## Plots
+par(mfrow = c(1, 2), mar = c(4, 4, 3, 1))
+
+# Left: linear histogram
+hist(
+  degs, breaks = 40,
+  col    = "#4C72B0", border = "white",
+  xlab   = "Degree k",
+  ylab   = "Count",
+  main   = sprintf("Degree histogram\n(n=%d, <k>=%.1f)", n_g, mean_k)
+)
+
+# Right: log-log CCDF
+plot(
+  ccdf_k, ccdf_val,
+  log  = "xy",
+  pch  = 19, cex = 0.5, col = adjustcolor("#C44E52", alpha.f = 0.7),
+  xlab = "Degree k",
+  ylab = expression(bar(F)(k) == Pr(K >= k)),
+  main = "Complementary CDF (log-log)"
+)
+grid()
+
+cat(sprintf("n = %d, m = %d\n", vcount(g), ecount(g)))
+cat(sprintf("<k> = %.2f, k_max = %d, k_min = %d\n",
+            mean(degs), max(degs), min(degs)))
+cat(sprintf("Density = %.5f\n", graph.density(g)))
+```
+
+# Paths, Distance, and the Small World
+
+## Walks, Paths, and Geodesics
+
+Moving from *who* is connected (degree) to *how* things flow requires thinking
+about paths through the network.
+
+Formally, for an undirected graph:
+
+- A **walk** is any sequence of adjacent nodes $i_1, i_2, \ldots, i_k$ where
+  $\{i_t, i_{t+1}\} \in E$ for all $t$. Nodes and edges may repeat.
+- A **path** is a walk where all nodes are distinct.
+- A **cycle** is a closed path: $i_1 = i_k$ with all intermediate nodes distinct.
+- The **geodesic distance** $\ell_{ij}$ is the length of the *shortest path*
+  between $i$ and $j$. If no path exists, $\ell_{ij} = \infty$.
+
+The **diameter** of a graph is the longest geodesic across all pairs:
+$$\text{diam}(G) = \max_{i \neq j} \ell_{ij}$$
+where we exclude $\ell_{ij} = \infty$ (i.e., we measure within the largest
+connected component).
+
+The **mean geodesic distance** (average path length) is:
+$$\langle \ell \rangle = \frac{1}{n(n-1)} \sum_{i \neq j} \ell_{ij}$$
+
+## Why Distance Matters: The Small World Phenomenon
+
+In 1967, sociologist Stanley Milgram asked 296 residents of Wichita and Omaha to
+route a letter to a specific target in Boston — but only by passing it to someone
+they knew personally. Of the 64 letters that arrived, the median chain length was
+**5.5 intermediaries** — giving rise to the phrase "six degrees of separation."
+
+(The study has since been critiqued: the 78% non-completion rate is not random,
+and the participants who succeeded were likely unusually well-connected. But the
+qualitative finding holds in larger digital datasets.)
+
+A back-of-envelope argument explains why short paths are possible. Suppose each
+person has $\gamma$ friends, with no overlap between social circles (a strong
+assumption). Then:
+
+- At distance 1: you can reach $\gamma$ people
+- At distance 2: $\gamma^2$ people
+- At distance $d$: $\gamma^d$ people
+
+Setting $\gamma^d = n$ and solving: $d = \frac{\ln n}{\ln \gamma}$. For the US
+population $n \approx 3 \times 10^8$:
+
+$$d = \frac{\ln(3 \times 10^8)}{\ln \gamma}$$
+
+Milgram's result of $d \approx 6$ implies $\gamma \approx \exp\!\left(\frac{\ln(3\times 10^8)}{6}\right) \approx 53$ friends. That
+seems large — but notice Facebook mutual friends don't count (weak ties, not
+acquaintances). The calculation is sensitive to the definition of "friend."
+
+::: {.callout-important}
+## The key takeaway
+Networks are "small" when the diameter $D = O(\log n)$ rather than $O(n)$.
+This exponential expansion along paths is what makes diseases, information, and
+prices propagate so quickly through real-world networks.
+:::
+
+## Computing Distances: BFS and the Facebook Networks
+
+Breadth-first search (BFS) from a single source computes all distances in
+$O(n + m)$ time. For large graphs, computing all $\binom{n}{2}$ pairwise
+distances by running BFS from every node costs $O(n(n+m))$ — feasible for
+$n \lesssim 10^4$, but not for the full Facebook100 dataset.
+
+**PS1, Question 1** asks you to compute diameter and mean geodesic distance
+for each of the 84 Facebook university networks. The key approximation:
+*sample* $s$ random source nodes and average — the error is $O(1/\sqrt{s})$.
+
+```{r}
+#| label: distances
+#| code-fold: true
+
+## ---- Helper: sample average path length ----
+sample_apl <- function(g, n_samples = 200, seed = 42) {
+  set.seed(seed)
+  comps <- components(g)
+  lcc   <- induced_subgraph(g, which(comps$membership == which.max(comps$csize)))
+
+  n_lcc   <- vcount(lcc)
+  sources <- sample(seq_len(n_lcc), min(n_samples, n_lcc))
+
+  total <- 0; count <- 0
+  for (src in sources) {
+    dists <- distances(lcc, v = src, mode = "out")
+    finite_d <- dists[dists > 0 & is.finite(dists)]
+    total <- total + sum(finite_d)
+    count <- count + length(finite_d)
+  }
+  if (count == 0) return(NA_real_)
+  total / count
+}
+
+## ---- Helper: double-sweep diameter lower bound ----
+approx_diameter <- function(g) {
+  comps <- components(g)
+  lcc   <- induced_subgraph(g, which(comps$membership == which.max(comps$csize)))
+
+  # Step 1: BFS from node 1
+  d1 <- distances(lcc, v = 1)
+  v  <- which.max(d1)
+
+  # Step 2: BFS from v
+  d2 <- distances(lcc, v = v)
+  max(d2[is.finite(d2)])
+}
+
+t0   <- proc.time()["elapsed"]
+apl  <- sample_apl(g, n_samples = 300)
+diam <- approx_diameter(g)
+t1   <- proc.time()["elapsed"]
+
+comps <- components(g)
+lcc   <- induced_subgraph(g, which(comps$membership == which.max(comps$csize)))
+
+cat(sprintf("Network: American75\n"))
+cat(sprintf("  Nodes (LCC): %d\n", vcount(lcc)))
+cat(sprintf("  Edges (LCC): %d\n", ecount(lcc)))
+cat(sprintf("  <l> ~ %.3f  (sampled)\n", apl))
+cat(sprintf("  diam ~ %d   (double-sweep lower bound)\n", diam))
+cat(sprintf("  Computed in %.2fs\n", t1 - t0))
+cat(sprintf("\n  log(n)/log(<k>) = %.2f  (ER prediction)\n",
+            log(vcount(lcc)) / log(mean(degree(lcc)))))
+```
+
+# Centrality: Who Matters, and Why?
+
+## Degree Centrality Is Not Enough
+
+Degree captures *local* connectivity — how many direct neighbours a node has.
+But in many settings, influence is determined by *position* in the network
+structure, not just by raw connectivity.
+
+Consider a node with degree 5 sitting at the junction between two otherwise
+disconnected communities, versus a node with degree 10 embedded in a tightly
+knit clique. The former is far more influential for information flow, despite
+lower degree.
+
+This motivates centrality measures that capture *global* structural importance.
+
+## Betweenness Centrality
+
+The **betweenness centrality** of node $k$ counts how often $k$ lies on the
+shortest path between other pairs of nodes:
+
+$$B_k = \frac{1}{\binom{n-1}{2}} \sum_{\substack{i \neq j \\ k \notin \{i,j\}}} \frac{P_k(i,j)}{P(i,j)}$$
+
+where $P(i,j)$ is the number of geodesic paths between $i$ and $j$, and
+$P_k(i,j)$ is the number that pass through $k$. The normalisation by
+$\binom{n-1}{2}$ makes $B_k \in [0, 1]$.
+
+**Interpretation**: a node with high betweenness is a *broker* — it controls
+traffic between otherwise separate parts of the network. Removing such nodes
+tends to dramatically fragment the graph.
+
+### The Medici Example
+
+15th-century Florence witnessed the rise of the Medici family from relative
+obscurity to political and economic dominance. The puzzle: many other families
+were wealthier and had longer aristocratic pedigrees.
+
+Padgett & Ansell (1993) digitised the marriage network of Florentine families
+and computed betweenness centralities. The Medici had $B_{\text{Medici}} = 0.522$
+— the highest of any family, by a wide margin. The Medici were positioned at
+the structural centre of the marriage network, serving as the broker connecting
+families that could not directly influence each other. Their political rise
+was not incidental: it was written into the topology of the network.
+
+::: {.callout-tip}
+## Betweenness as an economic asset
+High betweenness creates *information brokerage*: brokers hear news, prices,
+and opportunities before they diffuse to the rest of the network. It also
+creates *structural holes* (Burt 1992): the broker can play parties off against
+each other when they cannot coordinate directly.
+:::
+
+## Closeness Centrality
+
+**Closeness centrality** measures how quickly a node can reach all others:
+
+$$C_k = \frac{n-1}{\sum_{j \neq k} \ell_{kj}}$$
+
+A node with high closeness sits near the "centre of gravity" of the network
+and can spread information to all others quickly. Unlike betweenness, it does
+not depend on being a bottleneck — it rewards being well-connected on average.
+
+## Eigenvector Centrality and PageRank
+
+Both betweenness and closeness treat all paths equally. But a link from a
+high-status node should count more than a link from a peripheral one. This
+motivates **eigenvector centrality**:
+
+$$x_i = \frac{1}{\lambda} \sum_j A_{ij} x_j \quad \Longleftrightarrow \quad Ax = \lambda x$$
+
+The centrality vector $x$ is the leading eigenvector of $A$ (by the
+Perron–Frobenius theorem, this has all non-negative entries for connected graphs).
+Each node's score is proportional to the sum of its neighbours' scores.
+
+**PageRank** (Brin & Page, 1998) adds a damping factor to handle dangling nodes
+and make the walk ergodic:
+
+$$r_i = \frac{1-d}{n} + d \sum_j A_{ji} \frac{r_j}{k_j^{\text{out}}}$$
+
+With damping $d = 0.85$: with probability $d$ a random walker follows an
+outgoing link; with probability $1-d$ it teleports to a random node.
+PageRank is the stationary distribution of this random walk.
+
+```{r}
+#| label: centrality
+#| code-fold: true
+#| fig-cap: "Centrality measures on the Florentine marriage network. The Medici (node 8, 1-indexed) dominate by betweenness."
+
+family_names <- c(
+  "Acciaiuoli", "Albizzi",  "Barbadori", "Bischeri",    "Castellani",
+  "Ginori",     "Guadagni", "Lamberteschi", "Medici",    "Pazzi",
+  "Peruzzi",    "Pucci",    "Ridolfi",    "Salviati",   "Strozzi",
+  "Tornabuoni"
+)
+
+# Edges from Padgett (1993) — converted to 1-indexed
+edges_flo <- matrix(c(
+   1,9,  2,7,  2,9,  2,10,  3,9,  3,5,  4,7,  4,12,  4,15,
+   5,9,  5,15,  6,9,  7,11,  7,14,  7,15,  8,7,  9,10,  9,13,
+   9,14,  9,16,  11,15,  13,15,  13,16,  15,16
+), ncol = 2, byrow = TRUE)
+
+g_flo <- graph_from_edgelist(edges_flo, directed = FALSE)
+g_flo <- set_vertex_attr(g_flo, "name", value = family_names)
+medici_idx <- which(family_names == "Medici")   # = 9
+
+# Compute centralities
+deg_c <- degree(g_flo)
+btw_c <- betweenness(g_flo, normalized = TRUE)
+cls_c <- closeness(g_flo, normalized = TRUE)
+pr_c  <- page_rank(g_flo, damping = 0.85)$vector
+
+## Plot — 2x2 horizontal bar charts
+old_par <- par(mfrow = c(2, 2), mar = c(3, 7, 3, 1))
+
+plot_centrality <- function(vals, title, color) {
+  bar_colors <- rep(color, length(family_names))
+  bar_colors[medici_idx] <- "#2d2d2d"
+  bp <- barplot(
+    vals, names.arg = family_names, horiz = TRUE,
+    col  = bar_colors, border = NA,
+    las  = 2, cex.names = 0.7,
+    main = paste0(title, " Centrality\n(Medici in black)"),
+    xlab = ""
+  )
+  abline(v = vals[medici_idx], lty = 2, col = "#2d2d2d", lwd = 1.5)
+}
+
+plot_centrality(deg_c, "Degree",      "#4C72B0")
+plot_centrality(btw_c, "Betweenness", "#C44E52")
+plot_centrality(cls_c, "Closeness",   "#55A868")
+plot_centrality(pr_c,  "PageRank",    "#DD8452")
+
+par(old_par)
+
+cat("Medici centralities:\n")
+cat(sprintf("  Degree:      %d\n",     deg_c[medici_idx]))
+cat(sprintf("  Betweenness: %.4f  (highest in network: %.4f)\n",
+            btw_c[medici_idx], max(btw_c)))
+cat(sprintf("  Closeness:   %.4f\n", cls_c[medici_idx]))
+cat(sprintf("  PageRank:    %.4f\n", pr_c[medici_idx]))
+```
+
+# Clustering: Triadic Closure and Community Structure
+
+## Motivation: Triangles Are Everywhere
+
+Degree and betweenness describe *individual* nodes. A different question asks
+about the *local structure* around a node: to what extent are my neighbours also
+connected to each other?
+
+This matters because:
+
+1. **Trust propagation**: if A trusts B and A trusts C, there is social pressure
+   for B and C to also form a relationship — what Simmel called the principle of
+   *triadic closure*.
+2. **Community detection**: clusters in networks are regions of high local
+   clustering separated by sparse cross-community edges.
+3. **Model validation**: the Erdős–Rényi model predicts $C \to 0$ as
+   $n \to \infty$, but real networks maintain high clustering. This falsifies
+   ER as a realistic model.
+
+## Global Clustering (Transitivity)
+
+The **global clustering coefficient** (or transitivity) is the fraction of
+connected triples that are closed into triangles:
+
+$$C(A) = \frac{\text{number of triangles} \times 3}{\text{number of connected triples}} = \frac{\sum_{ijk} A_{ij} A_{jk} A_{ki}}{\sum_{ijk} A_{ij} A_{jk}}$$
+
+The factor of 3 accounts for the three different "pivot" nodes in each triangle
+(each triangle contributes to three distinct connected triples). This makes
+$C \in [0, 1]$.
+
+In matrix terms, the numerator is $\text{tr}(A^3)$ (each walk $i \to j \to k \to i$
+of length 3 is a triangle), and the denominator is $\sum_{i} k_i(k_i - 1)$.
+
+## Local Clustering Coefficient
+
+The **local clustering coefficient** for node $i$ with degree $k_i \geq 2$ is:
+
+$$C_i(A) = \frac{\text{edges among neighbours of } i}{\binom{k_i}{2}} = \frac{2 L_i}{k_i(k_i - 1)}$$
+
+where $L_i$ is the number of edges among $i$'s $k_i$ neighbours.
+
+The **average clustering coefficient** $\bar{C} = \frac{1}{n} \sum_i C_i$
+weights all nodes equally regardless of degree, giving more weight to low-degree
+nodes compared to the global $C(A)$.
+
+::: {.callout-note}
+## $C$ vs $\bar{C}$: which to use?
+$C(A)$ (global transitivity) is the right metric when you care about the
+fraction of triangles in the graph as a whole. $\bar{C}$ is more sensitive
+to the local structure around typical low-degree nodes. They can differ
+substantially: hubs with high degree contribute little to $\bar{C}$ (since
+their many neighbours are unlikely to all be connected) but dominate $C(A)$.
+:::
+
+```{r}
+#| label: clustering
+#| code-fold: true
+
+clustering_report <- function(g, name) {
+  c_global <- transitivity(g, type = "global")
+  c_avg    <- transitivity(g, type = "average")   # avg local CC, isolates excluded
+  deg      <- degree(g)
+  cc_local <- transitivity(g, type = "local")
+
+  valid <- which(deg >= 2 & !is.nan(cc_local))
+  corr  <- cor(deg[valid], cc_local[valid])
+
+  cat(sprintf("%s:\n", name))
+  cat(sprintf("  Global transitivity C(A) = %.4f\n", c_global))
+  cat(sprintf("  Avg local CC  C_bar      = %.4f\n", c_avg))
+  cat(sprintf("  Corr(degree, local CC)   = %.4f%s\n",
+              corr,
+              ifelse(corr < 0, "  (hubs less clustered)", "")))
+}
+
+clustering_report(g_flo, "Florentine marriages")
+clustering_report(g,     "American75 (Facebook)")
+
+# Compare to ER null
+c_er <- graph.density(g)
+cat(sprintf("\nER null model for American75:\n"))
+cat(sprintf("  C_ER = p = %.5f  (theoretically C -> 0 as n -> inf)\n", c_er))
+cat(sprintf("  Actual C = %.4f\n", transitivity(g, type = "global")))
+cat(sprintf("  Ratio actual/ER = %.1fx  <- much higher than random!\n",
+            transitivity(g, type = "global") / c_er))
+```
+
+# The Strength of Weak Ties
+
+## Granovetter's Paradox
+
+One of the most celebrated findings in sociology (Granovetter 1973, the most
+cited paper in the sociology of networks) concerns an apparent paradox in job
+referrals:
+
+> *Workers in the labour market find jobs primarily through referrals from
+> acquaintances — not from close friends.*
+
+Why would weaker connections be more useful? The answer lies in the topology
+of clustering.
+
+## Triadic Closure and Local Bridges
+
+Define a **strong tie** as a close friendship and a **weak tie** as an
+acquaintance. The **Strong Triadic Closure (STC) property** says: if node $A$
+has strong ties to both $B$ and $C$, then there should be *at least a weak tie*
+between $B$ and $C$.
+
+Intuitively: if $A$ is close friends with both $B$ and $C$, it is socially
+costly and informationally inconsistent for $B$ and $C$ to not even know each
+other.
+
+A **local bridge** between $A$ and $B$ is an edge whose removal would increase
+$\ell_{AB}$ substantially (say, to $> 2$). Local bridges connect otherwise
+distant parts of the network.
+
+**Claim**: if STC holds and $A$ has at least two strong ties, then any local
+bridge involving $A$ must be a *weak* tie.
+
+*Proof sketch*: suppose $A$–$B$ is a strong tie and a local bridge. By STC,
+for every other strong neighbour $C$ of $A$, there must be an edge $B$–$C$.
+But then removing $A$–$B$ would not increase $\ell_{BC}$ much (path goes
+through $A$–$C$–... to $B$), contradicting "local bridge." Contradiction.
+$\square$
+
+**Implication for job referrals**: close friends move in the same social
+circles. They know the same people, the same managers, the same opportunities.
+An acquaintance (weak tie) is embedded in a *different* cluster and therefore
+carries *non-redundant* information about job opportunities you haven't heard of.
+
+## LinkedIn RCT Validation
+
+Rajkumar et al. (2022) ran a massive randomised controlled trial: over 2015–2019,
+LinkedIn adjusted its "People You May Know" algorithm for 20+ million users.
+Some users received more weak-tie suggestions, others more strong-tie suggestions.
+
+Key results:
+- New connections formed from weak-tie suggestions led to *more job transmissions*
+  than those from strong-tie suggestions
+- But the relationship is an **inverted U**: moderately weak ties (around 10
+  mutual connections) were optimal
+- Ties with 0 mutual connections (pure strangers) were not useful either
+- The effect was strongest in high-technology sectors
+
+This is a rare case where a classic sociological theory was validated at scale
+using a pre-registered experiment with billions of data points.
+
+```{r}
+#| label: weak-ties
+#| code-fold: true
+#| fig-cap: "Illustration: local bridges between clusters must be weak ties (STC)"
+
+# Two clusters + one bridge
+edges_wt <- matrix(c(
+  # Cluster A (nodes 1-5): strong ties
+  1,2, 2,3, 3,4, 4,5, 5,1, 1,3,
+  # Cluster B (nodes 6-10): strong ties
+  6,7, 7,8, 8,9, 9,10, 10,6, 6,8,
+  # Local bridge: node 3 (A) -- node 7 (B)
+  3,7
+), ncol = 2, byrow = TRUE)
+
+g_wt <- graph_from_edgelist(edges_wt, directed = FALSE)
+V(g_wt)$label <- as.character(0:9)   # match Python 0-indexed labels
+
+# Colors
+V(g_wt)$color <- c(rep("#4C72B0", 5), rep("#C44E52", 5))
+
+# Edge colors: bridge (3–7 in 1-indexed) = green, rest = grey
+bridge_eid <- get.edge.ids(g_wt, c(3, 7))
+E(g_wt)$color <- "#888888"
+E(g_wt)$color[bridge_eid] <- "#2CA02C"
+E(g_wt)$width <- 2
+E(g_wt)$width[bridge_eid] <- 3
+
+set.seed(42)
+lay_wt <- layout_with_kk(g_wt)
+
+plot(
+  g_wt,
+  layout             = lay_wt,
+  vertex.size        = 22,
+  vertex.color       = V(g_wt)$color,
+  vertex.label       = V(g_wt)$label,
+  vertex.label.color = "white",
+  vertex.label.cex   = 0.85,
+  edge.color         = E(g_wt)$color,
+  edge.width         = E(g_wt)$width,
+  main = "Local bridge (green) must be a weak tie\nBlue = Cluster A, Red = Cluster B"
+)
+
+# Distance with and without the bridge
+d_before <- distances(g_wt, v = 3, to = 7)   # 1-indexed node 3 = Python node 2
+g_wt2    <- delete_edges(g_wt, bridge_eid)
+d_after  <- distances(g_wt2, v = 3, to = 7)
+
+cat(sprintf("Distance 3->7 with bridge:    %d\n",    d_before))
+cat(sprintf("Distance 3->7 without bridge: %d  <- bridge is critical\n", d_after))
+```
+
+# Networks in Economics: Price of Anarchy
+
+The final section of the lecture places networks in an economic context. Networks
+are not passive structures — agents make strategic decisions *on* them. This
+introduces game-theoretic considerations.
+
+## Braess's Paradox
+
+Consider a road network where one unit of traffic must travel from $s$ to $t$.
+Two routes exist:
+
+- Route 1: $s \xrightarrow{x_1} A \xrightarrow{1} t$, cost $= x_1 + 1$
+- Route 2: $s \xrightarrow{1} B \xrightarrow{x_2} t$, cost $= 1 + x_2$
+
+where $x_1, x_2$ are flows on the congested links (cost = flow on those links).
+
+At the **social optimum**: split traffic equally. $x_1 = x_2 = 1/2$. Total cost
+$= \frac{3}{2}$.
+
+At the **Nash equilibrium**: each infinitesimal driver chooses the route with
+lowest cost *given others' choices*. Equilibrium also has $x_1 = x_2 = 1/2$
+and total cost $= \frac{3}{2}$.
+
+Now add a zero-cost road from $A$ to $B$. Three routes now exist, including
+$s \to A \to B \to t$ with cost $x_1 + 0 + x_2$. At the *new* Nash equilibrium:
+everyone takes the $s \to A \to B \to t$ route, giving $x_1 = x_2 = 1$ and cost
+$= 2 > \frac{3}{2}$.
+
+**Adding a road made everyone worse off.** This is Braess's paradox (1968), and
+it has been observed empirically in Seoul, Stuttgart, and New York.
+
+The **Price of Anarchy** quantifies the efficiency loss:
+
+$$\text{PoA} = \frac{C(\text{Nash})}{C(\text{Social Optimum})}$$
+
+For the Braess example: $\text{PoA} = 2 / (3/2) = 4/3$.
+
+::: {.callout-note}
+## Why this matters
+Braess's paradox shows that network structure interacts with strategic behaviour
+in non-obvious ways. Infrastructure investment, drug trafficking crackdowns
+(Dell 2015), and platform design all face versions of this problem. Understanding
+when adding capacity helps versus hurts requires understanding the network topology.
+:::
+
+# Summary and What's Next
+
+## What We Can Now Measure
+
+| Concept | Measure | Formula |
+|---------|---------|---------|
+| Connectivity | Degree $k_i$ | $\sum_j A_{ij}$ |
+| Average density | $\langle k \rangle$ | $2m/n$ |
+| Global distance | $\langle \ell \rangle$, $\text{diam}$ | BFS |
+| Brokerage | Betweenness $B_k$ | paths through $k$ / all paths |
+| Centrality | PageRank $r_i$ | stationary random walk |
+| Triangle closure | $C(A)$, $\bar{C}$ | $\text{tr}(A^3) / \ldots$ |
+
+## The Critical Gap: Where Do These Numbers Come From?
+
+We can compute all of these measures on any real network. But then what?
+
+Suppose we find that the American75 Facebook network has $C = 0.15$. Is that
+high? Low? Expected? To answer this, we need a **null model** — a probability
+distribution over graphs with the same basic parameters ($n$, $\langle k \rangle$)
+against which to compare the observed statistic.
+
+This is the core motivation for **random graph models**, the subject of Lecture 2.
+
+**Key questions that random graphs will let us answer:**
+
+1. What clustering coefficient should we expect from a network with $n$ nodes
+   and mean degree $\langle k \rangle$? (Erdős–Rényi model → answer: $C \approx 0$)
+2. Why does clustering in real networks vastly exceed the ER prediction?
+   (Watts–Strogatz small-world model)
+3. Why do real networks have such heavy-tailed degree distributions?
+   (Barabási–Albert preferential attachment)
+4. Can we infer latent community structure from the observed edge pattern?
+   (Stochastic Block Model)
+
+```{r}
+#| label: motivation-preview
+#| code-fold: true
+#| fig-cap: "The Erdős–Rényi model matches <k> but completely misses clustering."
+
+n_fb <- vcount(g)
+m_fb <- ecount(g)
+p_er <- m_fb / (n_fb * (n_fb - 1) / 2)
+
+set.seed(1)
+g_er <- erdos.renyi.game(n = n_fb, p = p_er, type = "gnp", directed = FALSE)
+
+# Helper: double-sweep on arbitrary graph
+diam_g    <- approx_diameter(g)
+diam_g_er <- approx_diameter(g_er)
+
+df <- data.frame(
+  Metric = c("n", "m", "<k>", "Density", "C(A)", "C_bar", "Diameter (approx)"),
+  American75 = c(
+    vcount(g),
+    ecount(g),
+    sprintf("%.2f", mean(degree(g))),
+    sprintf("%.5f", graph.density(g)),
+    sprintf("%.4f", transitivity(g, type = "global")),
+    sprintf("%.4f", transitivity(g, type = "average")),
+    diam_g
+  ),
+  ER_same_n_p = c(
+    vcount(g_er),
+    ecount(g_er),
+    sprintf("%.2f", mean(degree(g_er))),
+    sprintf("%.5f", graph.density(g_er)),
+    sprintf("%.4f", transitivity(g_er, type = "global")),
+    sprintf("%.4f", transitivity(g_er, type = "average")),
+    diam_g_er
+  )
+)
+
+print(df, row.names = FALSE)
+cat("\nConclusion: ER gets <k> right by construction, but clustering is ~10x too low.\n")
+cat("This gap is the central motivation for more realistic random graph models.\n")
+```
+
+---
+
+## References
+
+- Easley, D., & Kleinberg, J. (2010). *Networks, Crowds, and Markets*. Cambridge
+  University Press. Ch. 2 (Graphs), Ch. 3 (Triadic closure).
+- Newman, M. E. J. (2013). *Networks: An Introduction*. Oxford University Press.
+  Ch. 6 (Measures and metrics), Ch. 7 (Paths and distances), Ch. 8 (Clustering).
+- Granovetter, M. S. (1973). The Strength of Weak Ties. *American Journal of
+  Sociology*, 78(6), 1360–1380.
+- Padgett, J. F., & Ansell, C. K. (1993). Robust Action and the Rise of the Medici.
+  *American Journal of Sociology*, 98(6), 1259–1319.
+- Rajkumar, K. et al. (2022). A causal test of the strength of weak ties.
+  *Science*, 377(6612), 1304–1310.
+- Braess, D. (1968). Über ein Paradoxon aus der Verkehrsplanung.
+  *Unternehmensforschung*, 12(1), 258–268.
