@@ -2,14 +2,15 @@
 title: "Problem Set 1"
 author: "Michael Fehl, Xènia Alemany"
 desc: "Network Measures & Random Graph Models"
+image: "/images/ps01_size.png"
+date: March 1, 2026
 format:
   html:
     embed-resources: true
   pdf:
     toc: true
 problem-set: true
-image: /images/network_citations.png
-editor: 
+editor:
   markdown: 
     wrap: 72
 execute:

@@ -1,7 +1,9 @@
 ---
 title: "Problem Set 3"
 author: "Xénia Alemany, Michael Fehl"
+desc: "Cascades, Seeding, Routing, and Opinion Dynamics"
 date: "March 10, 2026"
+image: "/images/ps03_email.png"
 format:
   html:
     embed-resources: true

@@ -2,13 +2,10 @@
 title: "Problem Set 2"
 author: "Xènia Alemany, Michael Fehl"
 desc: "Community Detection & ML"
-date: today
+image: "/images/ps02_node2vec.png"
+date: March 6, 2026
 format:
   html:
-    toc: true
-    toc-depth: 3
-    code-fold: false
-    theme: cosmo
     self-contained: true
   pdf:
     toc: true
