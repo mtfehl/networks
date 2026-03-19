@@ -1,5 +1,5 @@
 ---
-title: "02 — Random Graph Models"
+title: "02; Random Graph Models"
 subtitle: "Networks I: Concepts and Algorithms | BSE Data Science"
 author: "Notes based on Milán (2026), Newman (2013), Easley & Kleinberg (2010)"
 date: today
@@ -48,7 +48,7 @@ path lengths, clustering coefficients, centralities. These are useful summaries,
 but they leave open the most important question: **is what we observe surprising?**
 
 Suppose we find that the American75 Facebook network has transitivity $C = 0.15$.
-Is that high or low? We cannot answer without a **baseline** — a reference
+Is that high or low? We cannot answer without a **baseline**; a reference
 distribution of what $C$ looks like in "generic" networks with the same
 basic parameters ($n$ nodes, $\langle k \rangle$ average degree).
 
@@ -214,7 +214,7 @@ legend("topright", legend = paste0("c=", c_vals, " (sim)"),
        col = col_b, lwd = 2, bty = "n", cex = 0.8)
 
 ## (C) Real Facebook vs ER null
-mat  <- readMat("../ps/ps01/data/facebook_small/American75.mat")
+mat  <- readMat("American75.mat")
 A_sp <- mat$A
 A_t  <- as(A_sp, "TsparseMatrix")
 edges_fb <- cbind(A_t@i + 1L, A_t@j + 1L)
@@ -249,8 +249,8 @@ cat(sprintf("Ratio (real/ER): %.0fx higher\n", C_real / C_er))
 ### The Phase Transition Phenomenon
 
 Perhaps the most beautiful result in random graph theory is the sudden emergence
-of a **giant component** — a connected component containing a finite fraction of
-all nodes — as the average degree $c$ crosses 1.
+of a **giant component**; a connected component containing a finite fraction of
+all nodes; as the average degree $c$ crosses 1.
 
 ::: {.callout-important}
 ## Erdős–Rényi Phase Transition
@@ -260,7 +260,7 @@ At $c = \langle k \rangle = 1$, there is a sharp phase transition:
   The largest component as a fraction of $n$ vanishes.
 - **Supercritical** ($c > 1$): a **giant component** of size $\sim Sn$ exists,
   where $S > 0$ solves $S = 1 - e^{-cS}$.
-- **Critical** ($c = 1$): largest component is $O(n^{2/3})$ — diverging, but
+- **Critical** ($c = 1$): largest component is $O(n^{2/3})$; diverging, but
   sub-linear in $n$.
 :::
 
@@ -384,7 +384,7 @@ The phase transition directly models **epidemic thresholds**. Consider an
 SI (susceptible-infected) model on $G(n,p)$:
 
 - A fraction $\pi$ of nodes are vaccinated (immune)
-- Effective graph: $G((1-\pi)n, p)$ — remove immune nodes
+- Effective graph: $G((1-\pi)n, p)$; remove immune nodes
 - The disease spreads iff this effective graph has a giant component
 
 The epidemic threshold is when the effective average degree exceeds 1:
@@ -400,7 +400,7 @@ be protected, we must vaccinate at least fraction $1 - 1/c$ of nodes.
 ## Why We Need More Than ER
 
 Erdős–Rényi produces Poisson degree distributions. Real networks have
-heavy-tailed degree distributions — power laws, log-normals. The
+heavy-tailed degree distributions; power laws, log-normals. The
 **configuration model** decouples the degree sequence from the wiring pattern:
 we can input *any* degree sequence $\{k_1, k_2, \ldots, k_n\}$ and get a
 "random" graph that has those exact degrees.
@@ -421,14 +421,14 @@ as simple.
 $$p_{ij} = \frac{k_i k_j}{\sum_l k_l} = \frac{k_i k_j}{2m}$$
 
 This is a *heterogeneous* ER model: high-degree nodes are more likely to
-connect to each other — and to everyone else.
+connect to each other; and to everyone else.
 
 **Expected number of common neighbours** between $i$ and $j$:
 $$N_{ij} = \sum_l p_{il} p_{lj} = \frac{k_i k_j}{2m} \cdot \frac{\langle k^2 \rangle - \langle k \rangle}{\langle k \rangle}$$
 
 **Clustering still vanishes**: $C = O(1/n)$ for fixed $\langle k \rangle$, just
 as in ER. The configuration model fixes the *degree sequence* but still
-wires edges randomly — no triangle-formation mechanism exists.
+wires edges randomly; no triangle-formation mechanism exists.
 
 ## The Friendship Paradox
 
@@ -460,7 +460,7 @@ sampling through social networks can make it look like the unanimous favourite.
 **Giant component in the configuration model**: emerges when
 $\langle k^2 \rangle - 2\langle k \rangle > 0$. For a Poisson distribution
 ($\langle k^2 \rangle = \langle k \rangle^2 + \langle k \rangle$), this
-reduces to $\langle k \rangle > 1$ — recovering the ER result. For
+reduces to $\langle k \rangle > 1$; recovering the ER result. For
 heavy-tailed distributions, the condition is weaker: networks with power-law
 degree distributions essentially always have a giant component.
 
@@ -470,7 +470,7 @@ degree distributions essentially always have a giant component.
 #| fig-cap: "Friendship paradox: your neighbours' average degree exceeds your own."
 
 ## Load American75 (re-use g_fb from earlier chunk, or reload)
-mat      <- readMat("../ps/ps01/data/facebook_small/American75.mat")
+mat      <- readMat("American75.mat")
 A_sp     <- mat$A
 A_t      <- as(A_sp, "TsparseMatrix")
 edges_fb <- cbind(A_t@i + 1L, A_t@j + 1L)
@@ -549,7 +549,7 @@ We have two stylised facts about real social networks:
 2. **Short average path lengths**: "six degrees of separation" suggests
    $\langle \ell \rangle = O(\log n)$.
 
-These seem contradictory. High clustering requires lots of local triangles —
+These seem contradictory. High clustering requires lots of local triangles;
 which means most of your edges connect to people already in your cluster.
 Short paths require long-range connections that skip across the network.
 How can both hold simultaneously?
@@ -568,8 +568,8 @@ Watts & Strogatz (1998) propose a one-parameter interpolation:
 2. **Rewire** each edge independently with probability $\beta$: one endpoint
    is kept, the other is replaced with a uniformly random node.
 
-At $\beta = 0$: original lattice — high $C$, large $\langle \ell \rangle$.
-At $\beta = 1$: Erdős–Rényi — low $C$, small $\langle \ell \rangle$.
+At $\beta = 0$: original lattice; high $C$, large $\langle \ell \rangle$.
+At $\beta = 1$: Erdős–Rényi; low $C$, small $\langle \ell \rangle$.
 
 **The key insight**: a *small number* of rewirings (small $\beta > 0$)
 dramatically collapses path lengths while leaving clustering nearly
@@ -628,7 +628,8 @@ cat(sprintf("At β = 0 (lattice): C = %.3f  L = %.2f\n", C0, L0))
 idx_half_L <- which(L_norm < 0.5)[1]
 cat(sprintf("At β ≈ %.4f: L drops to 50%% of L0, C still at %.0f%% of C0\n",
             betas[idx_half_L], 100 * C_norm[idx_half_L]))
-g_rnd <- erdos.renyi.game(n = n_ws, m = n_ws * k_ws / 2, type = "gnm")
+g_rnd <- sample_gnm(n = n_ws, 
+                    m = n_ws * k_ws / 2)
 cat(sprintf("At β = 1 (ER approx): C = %.3f  L = %.2f\n",
             transitivity(g_rnd, type = "global"),
             mean_distance(g_rnd, directed = FALSE)))
@@ -647,8 +648,8 @@ motivates the next model.
 
 ## The Empirical Pattern
 
-Across an enormous range of systems — citations, hyperlinks, phone calls,
-metabolic networks — the degree distribution follows a **power law**:
+Across an enormous range of systems; citations, hyperlinks, phone calls,
+metabolic networks; the degree distribution follows a **power law**:
 
 $$p(k) \propto k^{-\gamma}$$
 
@@ -658,7 +659,7 @@ Empirical exponents typically fall in the range $\gamma \in (2, 3)$.
 The power law is *qualitatively* different from the Poisson: the standard
 deviation scales with the mean ($\sigma \sim \langle k \rangle$ for
 $\gamma \approx 3$, and even $\sigma = \infty$ for $\gamma \leq 3$).
-There is no "typical" degree — the distribution is **scale-free**.
+There is no "typical" degree; the distribution is **scale-free**.
 
 ::: {.callout-note}
 ## Why "scale-free"?
@@ -695,7 +696,7 @@ integrating:
 $$k_i(t) = m \left(\frac{t}{i}\right)^{1/2}$$
 
 where $i$ is the time node $i$ was born (boundary condition $k_i(i) = m$).
-**Older nodes accumulate more links** — this is the *first-mover advantage*
+**Older nodes accumulate more links**; this is the *first-mover advantage*
 demonstrated empirically in citation networks (Newman's papers, PS1 Q4).
 
 ### Deriving the Power Law
@@ -721,7 +722,7 @@ degree scales as:
 $$k_{\max} \sim k_{\min} \cdot n^{1/(\gamma-1)}$$
 
 For $\gamma = 3$: $k_{\max} \sim \sqrt{n}$. For the WWW with $n \sim 10^9$:
-$k_{\max} \sim 30{,}000$ — consistent with observed super-hubs.
+$k_{\max} \sim 30{,}000$; consistent with observed super-hubs.
 
 ```{r}
 #| label: power-law
@@ -833,7 +834,7 @@ creating triangles). The ratio $r = m_r/m_n$ controls the trade-off:
 
 - $r \to \infty$ (all uniform): exponential distribution, zero clustering
 - $r \to 0$ (all network search): power law, positive clustering
-- Intermediate $r$: interpolates — fits many real networks well
+- Intermediate $r$: interpolates; fits many real networks well
 
 ---
 
@@ -861,7 +862,7 @@ probabilities.
 **Special cases**:
 - $M_{uv} = p$ for all $u, v$: recovers Erdős–Rényi
 - $M_{uu} = p_{\text{in}}$, $M_{uv} = p_{\text{out}}$ for $u \neq v$:
-  the **planted partition model** — the simplest model with community structure
+  the **planted partition model**; the simplest model with community structure
 
 ## The Planted Partition Model
 
@@ -873,7 +874,7 @@ Here $c$ is the average degree, and $\varepsilon$ controls community
 - $\varepsilon \gg 0$: very distinct communities
 
 **Detectability threshold** (Decelle et al. 2011): below the threshold
-$\varepsilon > 2\sqrt{c}$, no algorithm can reliably detect communities —
+$\varepsilon > 2\sqrt{c}$, no algorithm can reliably detect communities;
 not because it's computationally hard, but because the signal is
 *statistically indistinguishable* from noise. This is a phase transition
 in the informativeness of the data.
@@ -1009,15 +1010,15 @@ We have good generative models, but three big inferential questions remain:
 
 2. **How do we find communities in an observed network?** SBM gives us
    the generative story, but inference (finding $z$ from $G$) is hard
-   computationally. This is the community detection problem — the focus
+   computationally. This is the community detection problem; the focus
    of the next lecture.
 
 3. **How do we predict missing edges or node labels?** Even with a good
    model, predicting new edges (link prediction) or unseen node attributes
    (semi-supervised classification) requires additional ML machinery.
 
-These three questions — community detection, link prediction, node
-classification — are the subject of **Lecture 3: Machine Learning with
+These three questions; community detection, link prediction, node
+classification; are the subject of **Lecture 3: Machine Learning with
 Network Data**.
 
 ---

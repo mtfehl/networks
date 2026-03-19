@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://mtfehl.github.io/networks/projects/project2/02project.html</loc>
+    <lastmod>2026-01-25T23:21:57.224Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mtfehl.github.io/networks/problem_sets/ps03/PS3_networks.html</loc>
+    <lastmod>2026-03-19T19:51:43.744Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mtfehl.github.io/networks/problem_sets/ps01/problem_set.html</loc>
+    <lastmod>2026-03-01T17:21:02.165Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mtfehl.github.io/networks/notes/02_RGM/02_random_graph_models_r.html</loc>
+    <lastmod>2026-03-18T12:57:36.023Z</lastmod>
+  </url>
+  <url>
     <loc>https://mtfehl.github.io/networks/index.html</loc>
     <lastmod>2026-02-28T11:34:35.542Z</lastmod>
   </url>
   <url>
-    <loc>https://mtfehl.github.io/networks/problem_sets/ps01/problem_set.html</loc>
-    <lastmod>2026-02-28T12:07:38.941Z</lastmod>
+    <loc>https://mtfehl.github.io/networks/notes/01_INTRO/01.html</loc>
+    <lastmod>2026-03-18T09:25:34.051Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mtfehl.github.io/networks/notes/03_ML/03_ml_network_data_r.html</loc>
+    <lastmod>2026-03-18T13:10:04.598Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mtfehl.github.io/networks/problem_sets/ps02/ps02.html</loc>
+    <lastmod>2026-03-08T20:41:40.918Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mtfehl.github.io/networks/projects/project1/01project.html</loc>
+    <lastmod>2026-01-25T23:25:37.505Z</lastmod>
   </url>
 </urlset>

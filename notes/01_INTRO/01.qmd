@@ -44,7 +44,7 @@ theme_set(
 
 Before diving into definitions, it is worth asking: *why is the study of networks a
 distinct field at all?* Most economic models treat agents as interacting through
-aggregate prices — a firm responds to market wages, not to the specific workers it
+aggregate prices; a firm responds to market wages, not to the specific workers it
 employs. Most statistical models treat observations as i.i.d. draws. Neither
 framework is adequate when the *identity* of who you are connected to fundamentally
 changes outcomes.
@@ -59,8 +59,8 @@ Consider a few canonical examples:
 | Supply chain | Firms | Input–output flows | Where does a shock propagate? |
 | Social media | Users | Follows/retweets | How does misinformation spread? |
 
-What all of these have in common: the *structure* of connections — not just their
-average density — determines outcomes. A disease spreading through a hub-and-spoke
+What all of these have in common: the *structure* of connections; not just their
+average density; determines outcomes. A disease spreading through a hub-and-spoke
 airline network behaves very differently from one spreading through a lattice. A
 worker connected to a structurally diverse set of acquaintances finds jobs faster
 than one embedded in a tightly clustered clique, even holding the *number* of
@@ -89,9 +89,9 @@ graph theory. His key insight: **the problem is purely topological**. The specif
 geography is irrelevant; what matters is only which landmasses are connected, and
 how many times. He observed that such a walk (now called an *Eulerian path*)
 requires every node except the start and end to have an even number of edges.
-Königsberg has four nodes, all with odd degree — so no such walk exists.
+Königsberg has four nodes, all with odd degree; so no such walk exists.
 
-The abstraction Euler introduced — a set of *nodes* connected by *edges* — is
+The abstraction Euler introduced; a set of *nodes* connected by *edges*; is
 exactly the graph. Every network model in this course is a specialisation of this
 same idea.
 
@@ -236,7 +236,7 @@ A single number like $\langle k \rangle$ conceals crucial heterogeneity. The
 
 Why does this matter? Consider two networks, both with $n = 1490$ nodes and
 $\langle k \rangle = 25.6$ (the 2004 political blogs network studied by Adamic &
-Glance). The maximum degree in that network was $k_{\max} = 351$ — more than
+Glance). The maximum degree in that network was $k_{\max} = 351$; more than
 13 times the mean. Linear-scale histograms make this invisible. The right tool
 is a **log–log plot** of the complementary CDF:
 
@@ -325,9 +325,9 @@ $$\langle \ell \rangle = \frac{1}{n(n-1)} \sum_{i \neq j} \ell_{ij}$$
 ## Why Distance Matters: The Small World Phenomenon
 
 In 1967, sociologist Stanley Milgram asked 296 residents of Wichita and Omaha to
-route a letter to a specific target in Boston — but only by passing it to someone
+route a letter to a specific target in Boston; but only by passing it to someone
 they knew personally. Of the 64 letters that arrived, the median chain length was
-**5.5 intermediaries** — giving rise to the phrase "six degrees of separation."
+**5.5 intermediaries**; giving rise to the phrase "six degrees of separation."
 
 (The study has since been critiqued: the 78% non-completion rate is not random,
 and the participants who succeeded were likely unusually well-connected. But the
@@ -347,7 +347,7 @@ population $n \approx 3 \times 10^8$:
 $$d = \frac{\ln(3 \times 10^8)}{\ln \gamma}$$
 
 Milgram's result of $d \approx 6$ implies $\gamma \approx \exp\!\left(\frac{\ln(3\times 10^8)}{6}\right) \approx 53$ friends. That
-seems large — but notice Facebook mutual friends don't count (weak ties, not
+seems large; but notice Facebook mutual friends don't count (weak ties, not
 acquaintances). The calculation is sensitive to the definition of "friend."
 
 ::: {.callout-important}
@@ -361,12 +361,12 @@ prices propagate so quickly through real-world networks.
 
 Breadth-first search (BFS) from a single source computes all distances in
 $O(n + m)$ time. For large graphs, computing all $\binom{n}{2}$ pairwise
-distances by running BFS from every node costs $O(n(n+m))$ — feasible for
+distances by running BFS from every node costs $O(n(n+m))$; feasible for
 $n \lesssim 10^4$, but not for the full Facebook100 dataset.
 
 **PS1, Question 1** asks you to compute diameter and mean geodesic distance
 for each of the 84 Facebook university networks. The key approximation:
-*sample* $s$ random source nodes and average — the error is $O(1/\sqrt{s})$.
+*sample* $s$ random source nodes and average; the error is $O(1/\sqrt{s})$.
 
 ```{r}
 #| label: distances
@@ -428,7 +428,7 @@ cat(sprintf("\n  log(n)/log(<k>) = %.2f  (ER prediction)\n",
 
 ## Degree Centrality Is Not Enough
 
-Degree captures *local* connectivity — how many direct neighbours a node has.
+Degree captures *local* connectivity; how many direct neighbours a node has.
 But in many settings, influence is determined by *position* in the network
 structure, not just by raw connectivity.
 
@@ -450,7 +450,7 @@ where $P(i,j)$ is the number of geodesic paths between $i$ and $j$, and
 $P_k(i,j)$ is the number that pass through $k$. The normalisation by
 $\binom{n-1}{2}$ makes $B_k \in [0, 1]$.
 
-**Interpretation**: a node with high betweenness is a *broker* — it controls
+**Interpretation**: a node with high betweenness is a *broker*; it controls
 traffic between otherwise separate parts of the network. Removing such nodes
 tends to dramatically fragment the graph.
 
@@ -483,7 +483,7 @@ $$C_k = \frac{n-1}{\sum_{j \neq k} \ell_{kj}}$$
 
 A node with high closeness sits near the "centre of gravity" of the network
 and can spread information to all others quickly. Unlike betweenness, it does
-not depend on being a bottleneck — it rewards being well-connected on average.
+not depend on being a bottleneck; it rewards being well-connected on average.
 
 ## Eigenvector Centrality and PageRank
 
@@ -518,7 +518,7 @@ family_names <- c(
   "Tornabuoni"
 )
 
-# Edges from Padgett (1993) — converted to 1-indexed
+# Edges from Padgett (1993); converted to 1-indexed
 edges_flo <- matrix(c(
    1,9,  2,7,  2,9,  2,10,  3,9,  3,5,  4,7,  4,12,  4,15,
    5,9,  5,15,  6,9,  7,11,  7,14,  7,15,  8,7,  9,10,  9,13,
@@ -535,7 +535,7 @@ btw_c <- betweenness(g_flo, normalized = TRUE)
 cls_c <- closeness(g_flo, normalized = TRUE)
 pr_c  <- page_rank(g_flo, damping = 0.85)$vector
 
-## Plot — 2x2 horizontal bar charts
+## Plot; 2x2 horizontal bar charts
 old_par <- par(mfrow = c(2, 2), mar = c(3, 7, 3, 1))
 
 plot_centrality <- function(vals, title, color) {
@@ -577,7 +577,7 @@ connected to each other?
 This matters because:
 
 1. **Trust propagation**: if A trusts B and A trusts C, there is social pressure
-   for B and C to also form a relationship — what Simmel called the principle of
+   for B and C to also form a relationship; what Simmel called the principle of
    *triadic closure*.
 2. **Community detection**: clusters in networks are regions of high local
    clustering separated by sparse cross-community edges.
@@ -662,7 +662,7 @@ cited paper in the sociology of networks) concerns an apparent paradox in job
 referrals:
 
 > *Workers in the labour market find jobs primarily through referrals from
-> acquaintances — not from close friends.*
+> acquaintances; not from close friends.*
 
 Why would weaker connections be more useful? The answer lies in the topology
 of clustering.
@@ -762,14 +762,14 @@ d_before <- distances(g_wt, v = 3, to = 7)   # 1-indexed node 3 = Python node 2
 g_wt2    <- delete_edges(g_wt, bridge_eid)
 d_after  <- distances(g_wt2, v = 3, to = 7)
 
-cat(sprintf("Distance 3->7 with bridge:    %d\n",    d_before))
-cat(sprintf("Distance 3->7 without bridge: %d  <- bridge is critical\n", d_after))
+cat(sprintf("Distance 3->7 with bridge:    %f\n",    d_before))
+cat(sprintf("Distance 3->7 without bridge: %f  <- bridge is critical\n", d_after))
 ```
 
 # Networks in Economics: Price of Anarchy
 
 The final section of the lecture places networks in an economic context. Networks
-are not passive structures — agents make strategic decisions *on* them. This
+are not passive structures; agents make strategic decisions *on* them. This
 introduces game-theoretic considerations.
 
 ## Braess's Paradox
@@ -829,7 +829,7 @@ when adding capacity helps versus hurts requires understanding the network topol
 We can compute all of these measures on any real network. But then what?
 
 Suppose we find that the American75 Facebook network has $C = 0.15$. Is that
-high? Low? Expected? To answer this, we need a **null model** — a probability
+high? Low? Expected? To answer this, we need a **null model**; a probability
 distribution over graphs with the same basic parameters ($n$, $\langle k \rangle$)
 against which to compare the observed statistic.
 
