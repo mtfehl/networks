@@ -1,8 +1,10 @@
 ---
 title: "02; Random Graph Models"
 subtitle: "Networks I: Concepts and Algorithms | BSE Data Science"
-author: "Notes based on Milán (2026), Newman (2013), Easley & Kleinberg (2010)"
+author: "Michael Fehl"
 date: 02-21-2026
+class-notes: true
+image: "/images/notes02_RGM.png"
 format:
   html:
     toc: true

@@ -1,7 +1,7 @@
 ---
 title: "Problem Set 2"
 author: "Xènia Alemany, Michael Fehl"
-desc: "Community Detection & ML"
+description: "Community Detection & ML"
 problem-set: true
 image: "/images/ps02_node2vec.png"
 date: March 6, 2026

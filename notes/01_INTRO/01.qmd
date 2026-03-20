@@ -3,6 +3,8 @@ title: "01: Introduction to Networks"
 subtitle: "Networks I: Concepts and Algorithms"
 author: "Michael Fehl"
 date: 02-19-2026
+class-notes: true
+image: "/images/notes01_networks.png"
 format:
   html:
     toc: true
@@ -856,7 +858,7 @@ m_fb <- ecount(g)
 p_er <- m_fb / (n_fb * (n_fb - 1) / 2)
 
 set.seed(1)
-g_er <- erdos.renyi.game(n = n_fb, p = p_er, type = "gnp", directed = FALSE)
+g_er <- sample_gnp(n = n_fb, p = p_er, directed = FALSE)
 
 # Helper: double-sweep on arbitrary graph
 diam_g    <- approx_diameter(g)
