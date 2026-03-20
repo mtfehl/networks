@@ -1,6 +1,8 @@
 ---
 title: "02; Random Graph Models"
 subtitle: "Networks I: Concepts and Algorithms | BSE Data Science"
+description: " "
+
 author: "Michael Fehl"
 date: 02-21-2026
 class-notes: true

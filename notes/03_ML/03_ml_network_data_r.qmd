@@ -1,6 +1,7 @@
 ---
 title: "Machine Learning with Network Data"
 subtitle: "Networks I: Concepts and Algorithms | BSE Data Science"
+description: " "
 author: "Michael Fehl"
 date: 02-26-2026
 class-notes: true

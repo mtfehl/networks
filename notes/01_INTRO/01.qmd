@@ -1,6 +1,7 @@
 ---
 title: "01: Introduction to Networks"
 subtitle: "Networks I: Concepts and Algorithms"
+description: " "
 author: "Michael Fehl"
 date: 02-19-2026
 class-notes: true
