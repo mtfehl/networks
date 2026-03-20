@@ -17,6 +17,7 @@
 !images/
 !docs/images/
 !_freeze/
+!problem_sets/**/*.png
 
 # === Misc ===
 .Renviron
