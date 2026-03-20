@@ -2,7 +2,7 @@
 title: "Machine Learning with Network Data"
 subtitle: "Networks I: Concepts and Algorithms | BSE Data Science"
 author: "Michael Fehl"
-date: today
+date: 02-26-2026
 format:
   html:
     toc: true
@@ -10,14 +10,14 @@ format:
     toc-location: left
     number-sections: true
     code-fold: false
-    theme: flatly
     embed-resources: false
-  pdf:
-    toc: true
-    number-sections: true
+  #pdf:
+  #  toc: true
+  #  number-sections: true
 execute:
   warning: false
   message: false
+  freeze: true
 ---
 
 ```{r}

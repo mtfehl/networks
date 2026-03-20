@@ -16,7 +16,8 @@ listing:
   - id: problem-sets
     contents: 
       - problem_sets/ps01
-      #- problem_sets/ps02
+      - problem_sets/ps02
+      - problem_sets/ps03
     include:
       problem-set: true
     type: grid

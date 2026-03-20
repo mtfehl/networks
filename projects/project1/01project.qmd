@@ -1,10 +1,15 @@
 ---
-title: "Project 1: Name"
-author: "Michael Fehl"
-desc: "Project 2 Description"
+title: "Project: Shock Propagation Through a Migration Network"
+author: "Michael Fehl & Xenia Alemany"
+date: March 30, 2026
+desc: ""
 format:
   html:
     embed-resources: false
 project: true
 image: /images/placeholder.png
+
+execute:
+  warning: false
+  freeze: true
 ---

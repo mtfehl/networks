@@ -2,7 +2,7 @@
 title: "02; Random Graph Models"
 subtitle: "Networks I: Concepts and Algorithms | BSE Data Science"
 author: "Notes based on Milán (2026), Newman (2013), Easley & Kleinberg (2010)"
-date: today
+date: 02-21-2026
 format:
   html:
     toc: true
@@ -12,12 +12,13 @@ format:
     code-fold: false
     theme: flatly
     embed-resources: false
-  pdf:
-    toc: true
-    number-sections: true
+  #pdf:
+   # toc: true
+    #number-sections: true
 execute:
   warning: false
   message: false
+  freeze: true
 ---
 
 ```{r}

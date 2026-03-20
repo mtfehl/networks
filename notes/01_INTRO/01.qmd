@@ -2,7 +2,7 @@
 title: "01: Introduction to Networks"
 subtitle: "Networks I: Concepts and Algorithms"
 author: "Michael Fehl"
-date: today
+date: 02-19-2026
 format:
   html:
     toc: true
@@ -11,13 +11,13 @@ format:
     number-sections: true
     code-fold: false
     embed-resources: false
-  pdf:
-    toc: true
-    number-sections: true
+  #pdf:
+  #  toc: true
+  #  number-sections: true
 execute:
   warning: false
   message: false
-  freeze: auto
+  freeze: true
   cache: true
 ---
 
