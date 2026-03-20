@@ -7,11 +7,13 @@ image: "/images/ps03_email.png"
 format:
   html:
     embed-resources: true
-  pdf:
-    toc: true
-    number-sections: true
-    geometry: margin=1in
+  # pdf:
+  #   toc: true
+  #   number-sections: true
+  #   geometry: margin=1in
     
+freeze: true
+
 execute:
   error: true
   cache: true

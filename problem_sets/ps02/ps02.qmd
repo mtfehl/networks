@@ -7,13 +7,13 @@ date: March 6, 2026
 format:
   html:
     self-contained: true
-  pdf:
-    toc: true
-    documentclass: article
-    geometry: margin=1in
-    highlight-style: github
-    keep-tex: false
-    fig-crop: false
+  # pdf:
+  #   toc: true
+  #   documentclass: article
+  #   geometry: margin=1in
+  #   highlight-style: github
+  #   keep-tex: false
+  #   fig-crop: false
 execute:
   warning: false
   message: false
