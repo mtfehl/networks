@@ -4,7 +4,7 @@ author: "Michael Fehl"
 desc: "Project 2 Description"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 project: true
 image: /images/placeholder.png
 ---

@@ -6,7 +6,7 @@ image: "/images/ps01_size.png"
 date: March 1, 2026
 format:
   html:
-    embed-resources: true
+    embed-resources: false
   # pdf:
   #   toc: true
 problem-set: true

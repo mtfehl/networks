@@ -11,7 +11,7 @@ format:
     number-sections: true
     code-fold: false
     theme: flatly
-    embed-resources: true
+    embed-resources: false
   pdf:
     toc: true
     number-sections: true

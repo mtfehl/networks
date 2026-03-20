@@ -6,7 +6,7 @@ date: "March 10, 2026"
 image: "/images/ps03_email.png"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
   # pdf:
   #   toc: true
   #   number-sections: true
